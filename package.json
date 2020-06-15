@@ -1,0 +1,38 @@
+{
+  "name": "Sistema",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js --exec babel-node",
+    "seedDb": "node seed/seed-db.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-boost": "^0.4.9",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link-http": "^1.5.17",
+    "apollo-server": "^2.14.3",
+    "apollo-server-express": "^2.14.3",
+    "babel-cli": "^6.26.0",
+    "babel-node": "0.0.1-security",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-3": "^6.24.1",
+    "cors": "^2.8.5",
+    "csv-parse": "^4.10.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "graphql-tag": "^2.10.3",
+    "morgan": "^1.10.0",
+    "neo4j-driver": "^4.0.2",
+    "neo4j-graphql-js": "^2.14.2",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
