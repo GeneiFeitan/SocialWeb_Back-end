@@ -1,4 +1,5 @@
 import { typeDefs} from './graphql-schema';
+import {resolvers} from './resolvers';
 import { initializeDatabase } from "./initialize"
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express';
@@ -16,10 +17,11 @@ const app = express();
 
 const schema = makeAugmentedSchema({
     typeDefs,
+    resolvers,
     config: {
-        mutation: false,
+        mutation: true,
         query: {
-            exclude: ["MySecretType"]
+            exclude: ["CreateUser"]
         }
     }
 });
@@ -28,7 +30,7 @@ const driver = neo4j.driver(
     process.env.NEO4J_URI || "bolt://localhost:7687",
     neo4j.auth.basic(
         process.env.NEO4J_USER || "neo4j", 
-        process.env.NEO4J_PASSWORD || "12345"
+        process.env.NEO4J_PASSWORD || "123456"
     )
     // ,{
     //     encrypted: process.env.NEO4J_ENCRYPTED ? 'ENCRYPTION_ON': 'ENCRYPTION_OFF',
@@ -69,7 +71,8 @@ const driver = neo4j.driver(
 
 const server = new ApolloServer({
     schema,
-    context: { driver }
+    context: { driver}
+    
 });
 
 // Specify host, port and path for GraphQL endpoint

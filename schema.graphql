@@ -1,91 +1,82 @@
-type User {
+  type User {
   userId: ID!
-  cityesss: String
-  name: String
-  reviews: [Review] @relation(name: "WROTE", direction: "OUT")
-  avgStars: Float
-    @cypher(
-      statement: "MATCH (this)-[:WROTE]->(r:Review) RETURN toFloat(avg(r.stars))"
-    )
-  numReviews: Int
-    @cypher(statement: "MATCH (this)-[:WROTE]->(r:Review) RETURN COUNT(r)")
-  recommendations(first: Int = 3): [Business]
-    @cypher(
-      statement: "MATCH (this)-[:WROTE]->(r:Review)-[:REVIEWS]->(:Business)<-[:REVIEWS]-(:Review)<-[:WROTE]-(:User)-[:WROTE]->(:Review)-[:REVIEWS]->(rec:Business) WHERE NOT EXISTS( (this)-[:WROTE]->(:Review)-[:REVIEWS]->(rec) ) WITH rec, COUNT(*) AS num ORDER BY num DESC LIMIT $first RETURN rec"
-    )
-}
-
-type Business {
-  businessId: ID!
   name: String!
-  address: String
-  city: String
-  state: String
-  location: Point
-  avgStars: Float
-    @cypher(
-      statement: "MATCH (this)<-[:REVIEWS]-(r:Review) RETURN coalesce(avg(r.stars),0.0)"
-    )
-  reviews: [Review] @relation(name: "REVIEWS", direction: "IN")
-  categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+  status: String!
+  employeeNumber:String
+  groups:[Group] @relation(name:"BELONGS", direction:"OUT")
+  department:[Department] @relation(name:"WORKS", direction:"OUT")
+  leader:[Department] @relation(name:"HEADER", direction:"OUT")
+  moderator:[Group] @relation(name:"MODERATOR", direction:"OUT")
+
+
 }
 
-type Review {
-  reviewId: ID!
-  stars: Float
-  text: String
-  date: Date
-  business: Business @relation(name: "REVIEWS", direction: "OUT")
-  user: User @relation(name: "WROTE", direction: "IN")
+type Group{
+  groupId:ID!
+  name: String!
+  status: String!
+  members: [User] @relation(name:"BELONGS", direction:"IN")
+  moderator:User @relation(name:"MODERATOR", direction:"IN")
+  createdBy:User @relation(name:"CREATED", direction:"IN")
+  aprobed: User! @relation(name:"APPROVED", direction:"IN")
 }
 
-type Category {
-  name: ID!
-  businesses: [Business] @relation(name: "IN_CATEGORY", direction: "IN")
+type Department{
+  departmentId: ID!
+  name: String!
+  status: String!
+  director: User @relation(name:"HEADER", direction:"IN")
+  members:[User] @relation(name:"WORKS",direction:"IN")
 }
 
-type RatingCount {
-  stars: Float!
-  count: Int!
-}
-
-type Mutation {
-  mergeBusinessCategory(categories: [String!]!, businessId: ID!): Business
-    @cypher(
-      statement: "MATCH (b:Business {businessId: $businessId}) UNWIND $categories AS cat MERGE (c:Category {name: cat}) MERGE (b)-[:IN_CATEGORY]->(c) RETURN b"
-    )
-}
 
 type Query {
-  userCount: Int! @cypher(statement: "MATCH (u:User) RETURN COUNT(u)")
-  ratingsCount: [RatingCount]
-    @cypher(
-      statement: "MATCH (r:Review) WITH r.stars AS stars, COUNT(*) AS count ORDER BY stars RETURN {stars: stars, count: count}"
-    )
+  allUser (first: Int = 4, offset: Int = 0):[User]
+  userByname(search: String!): [User]
+  userById(id: ID!): User
+
+
+  
 }
 
 
 
+type Mutation{
+ MergeUser(
+    userId: ID!
+  name: String!
+  status: String!
+  employeeNumber:String
+  ):User
 
-# type Departement {
-#   deptID: ID!
-#   name: String!
+
   
-# }
+  mergeUserDepartmen2(userIds: ID!, departmentIds: ID!):Department
+    @cypher(
+      statement: "MATCH (u:User {userId:$userIds}) MATCH (d:Department {departmentId:$departmentIds}) MERGE (u)-[:WORKS]->(d) return d"
+    )
 
-# type User {
-#   userID: ID!
-#   name: String!
-# }
+    CreateUserandAddtoDepartmen(departmentId:ID!, userId:ID!, employeeNumber:String, name:String, status:String):User
+    @cypher(
+        statement:"MATCH (d:Department{departmentId:$departmentId}) MERGE (u:User{userId:$userId, name:$name,employeeNumber:$employeeNumber,status:$status}) MERGE (u)-[:WORKS]->(d) RETURN u"
+    )
 
-# type Group {
-#   groupID: ID!
-#   name: String!
-  
-# }
+   
 
-  # createdBy:[]
-  # reportsTo:[]
-  # superviceFor:[]
-  # members:[]
-  # director:[]
+}
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
