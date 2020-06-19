@@ -1,82 +1,64 @@
-  type User {
+type User {
   userId: ID!
   name: String!
   status: String!
-  employeeNumber:String
-  groups:[Group] @relation(name:"BELONGS", direction:"OUT")
-  department:[Department] @relation(name:"WORKS", direction:"OUT")
-  leader:[Department] @relation(name:"HEADER", direction:"OUT")
-  moderator:[Group] @relation(name:"MODERATOR", direction:"OUT")
-
-
+  employeeNumber: String
+  groups: [Group] @relation(name: "BELONGS", direction: "OUT")
+  department: Department @relation(name: "WORKS", direction: "OUT")
+  leader: [Department] @relation(name: "HEADER", direction: "OUT")
+  moderator: [Group] @relation(name: "MODERATOR", direction: "OUT")
 }
 
-type Group{
-  groupId:ID!
+type Group {
+  groupId: ID!
   name: String!
   status: String!
-  members: [User] @relation(name:"BELONGS", direction:"IN")
-  moderator:User @relation(name:"MODERATOR", direction:"IN")
-  createdBy:User @relation(name:"CREATED", direction:"IN")
-  aprobed: User! @relation(name:"APPROVED", direction:"IN")
+  members: [User] @relation(name: "BELONGS", direction: "IN")
+  moderator: User @relation(name: "MODERATOR", direction: "IN")
+  createdBy: User @relation(name: "CREATED", direction: "IN")
+  aprobed: User! @relation(name: "APPROVED", direction: "IN")
 }
 
-type Department{
+type Department {
   departmentId: ID!
   name: String!
   status: String!
-  director: User @relation(name:"HEADER", direction:"IN")
-  members:[User] @relation(name:"WORKS",direction:"IN")
+  director: User @relation(name: "HEADER", direction: "IN")
+  members: [User] @relation(name: "WORKS", direction: "IN")
 }
 
-
 type Query {
-  allUser (first: Int = 4, offset: Int = 0):[User]
+  allUser(first: Int = 4, offset: Int = 0): [User]
   userByname(search: String!): [User]
   userById(id: ID!): User
 
-
   
 }
 
-
-
-type Mutation{
- MergeUser(
+type Mutation {
+  MergeUser(
     userId: ID!
-  name: String!
-  status: String!
-  employeeNumber:String
-  ):User
+    name: String!
+    status: String!
+    employeeNumber: String
+  ): User
 
-
-  
-  mergeUserDepartmen2(userIds: ID!, departmentIds: ID!):Department
+  mergeUserToDepartmen(userIds: ID!, departmentIds: ID!): Department
     @cypher(
       statement: "MATCH (u:User {userId:$userIds}) MATCH (d:Department {departmentId:$departmentIds}) MERGE (u)-[:WORKS]->(d) return d"
     )
 
-    CreateUserandAddtoDepartmen(departmentId:ID!, userId:ID!, employeeNumber:String, name:String, status:String):User
+  CreateUserandAddtoDepartmen(
+    departmentId: ID!
+    userId: ID!
+    employeeNumber: String
+    name: String
+    status: String
+  ): User
     @cypher(
-        statement:"MATCH (d:Department{departmentId:$departmentId}) MERGE (u:User{userId:$userId, name:$name,employeeNumber:$employeeNumber,status:$status}) MERGE (u)-[:WORKS]->(d) RETURN u"
+      statement: "MATCH (d:Department{departmentId:$departmentId}) MERGE (u:User{userId:$userId, name:$name,employeeNumber:$employeeNumber,status:$status}) MERGE (u)-[:WORKS]->(d) RETURN u"
     )
 
-   
 
+    createGroupAndAddUsers(users:[ID], groupId:ID!, name:String, status:String):[ID]
 }
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-

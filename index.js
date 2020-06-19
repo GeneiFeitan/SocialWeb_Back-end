@@ -1,6 +1,5 @@
 import { typeDefs} from './graphql-schema';
-import {resolvers} from './resolvers';
-import { initializeDatabase } from "./initialize"
+import {resolvers} from './Resolvers/resolvers';
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express';
 import dotenv from 'dotenv'
