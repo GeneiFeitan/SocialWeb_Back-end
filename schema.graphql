@@ -1,38 +1,63 @@
 type User {
-  userId: ID!
-  name: String!
-  status: String!
+  userId: ID
+  name: String
+  lastName:String
+  email:String
+  password:String
+  status: String
   employeeNumber: String
   groups: [Group] @relation(name: "BELONGS", direction: "OUT")
-  department: Department @relation(name: "WORKS", direction: "OUT")
+  department: [Department] @relation(name: "WORKS", direction: "OUT")
   leader: [Department] @relation(name: "HEADER", direction: "OUT")
   moderator: [Group] @relation(name: "MODERATOR", direction: "OUT")
 }
 
 type Group {
   groupId: ID!
-  name: String!
-  status: String!
+  name: String
+  status: String
   members: [User] @relation(name: "BELONGS", direction: "IN")
   moderator: User @relation(name: "MODERATOR", direction: "IN")
   createdBy: User @relation(name: "CREATED", direction: "IN")
-  aprobed: User! @relation(name: "APPROVED", direction: "IN")
+  aprobed: User @relation(name: "APPROVED", direction: "IN")
 }
 
 type Department {
   departmentId: ID!
-  name: String!
-  status: String!
+  name: String
+  status: String
   director: User @relation(name: "HEADER", direction: "IN")
   members: [User] @relation(name: "WORKS", direction: "IN")
+}
+
+type Token{
+  token: String
+}
+
+input AuntenticarInput{
+  email:String!
+  password:String!
+}
+
+input UserInput{
+  name:String
+}
+
+input GroupInput{
+  name:String!
+  status:String
+}
+
+input DepartmentInput{
+  name:String!
+  status:String
 }
 
 type Query {
   allUser(first: Int = 4, offset: Int = 0): [User]
   userByname(search: String!): [User]
   userById(id: ID!): User
-
-  
+  obtenerUsuario(token:String!):User
 }
 
 type Mutation {
@@ -58,7 +83,6 @@ type Mutation {
     @cypher(
       statement: "MATCH (d:Department{departmentId:$departmentId}) MERGE (u:User{userId:$userId, name:$name,employeeNumber:$employeeNumber,status:$status}) MERGE (u)-[:WORKS]->(d) RETURN u"
     )
-
-
     createGroupAndAddUsers(users:[ID], groupId:ID!, name:String, status:String):[ID]
+    autenticarUsuario(input: AuntenticarInput): Token
 }

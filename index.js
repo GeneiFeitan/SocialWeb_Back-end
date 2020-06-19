@@ -17,6 +17,12 @@ const app = express();
 const schema = makeAugmentedSchema({
     typeDefs,
     resolvers,
+    context:()=>{
+        const usuario="test";
+        return{
+            usuario
+        }
+    },
     config: {
         mutation: true,
         query: {
@@ -29,44 +35,10 @@ const driver = neo4j.driver(
     process.env.NEO4J_URI || "bolt://localhost:7687",
     neo4j.auth.basic(
         process.env.NEO4J_USER || "neo4j", 
-        process.env.NEO4J_PASSWORD || "123456"
+        process.env.NEO4J_PASSWORD || "neo4j2"
     )
-    // ,{
-    //     encrypted: process.env.NEO4J_ENCRYPTED ? 'ENCRYPTION_ON': 'ENCRYPTION_OFF',
-    // }
 );
 
-/*
- * Perform any database initialization steps such as
- * creating constraints or ensuring indexes are online
- *
- */
-// const init = async (driver) => {
-//     await initializeDatabase(driver)
-// }
-
-/*
- * We catch any errors that occur during initialization
- * to handle cases where we still want the API to start
- * regardless, such as running with a read only user.
- * In this case, ensure that any desired initialization steps
- * have occurred
- */
-
-// init(driver)
-
-/*
- * Create a new ApolloServer instance, serving the GraphQL schema
- * created using makeAugmentedSchema above and injecting the Neo4j driver
- * instance into the context object so it is available in the
- * generated resolvers to connect to the database.
- */
-// const server = new ApolloServer({
-//     context: { driver, neo4jDatabase: process.env.NEO4J_DATABASE||Graph },
-//     schema: schema,
-//     introspection: true,
-//     playground: true,
-// });
 
 const server = new ApolloServer({
     schema,
@@ -75,9 +47,9 @@ const server = new ApolloServer({
 });
 
 // Specify host, port and path for GraphQL endpoint
-const port = process.env.GRAPHQL_SERVER_PORT || 4001
+const port = process.env.GRAPHQL_SERVER_PORT || 80
 const path = process.env.GRAPHQL_SERVER_PATH || '/graphql'
-const host = process.env.GRAPHQL_SERVER_HOST || 'localhost'
+const host = process.env.GRAPHQL_SERVER_HOST || '10.89.52.20'
 
 /*
  * Optionally, apply Express middleware for authentication, etc
