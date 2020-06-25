@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 
 require("dotenv").config({ path: "variables.env" });
 
-const crearToken = (usuario, secret, expiresIn) => {
-  const { userId, email, name } = usuario;
+const crearToken = (user, secret, expiresIn) => {
+  const { userId, email, name } = user;
   return jwt.sign({ userId, email, name }, secret, { expiresIn });
 };
 
@@ -21,18 +21,26 @@ export default {
     },
     obtenerUsuario: async (_, { token }) => {
       try {
-        const usuarioId = await jwt.verify(token, process.env.SECRETWORD);
-        console.log(JSON.stringify(usuarioId));
-        return usuarioId;
+        const userId = await jwt.verify(token, process.env.SECRETWORD);
+        console.log(JSON.stringify(userId));
+        return userId;
       } catch (error) {
         console.log(error);
         throw new Error("No se pudo obtener el usuario");
       }
     },
+    getUser: async (_,{},ctx)=>{
+      try {
+        console.log(ctx.user);
+        return ctx.user;
+      } catch (error) {
+        throw new Error("No se pudo obtener el usuario");
+      }
+    }
   },
 
   Mutation: {
-    NuevoUsuario: async (obj, { input }, context) => {
+    newUser: async (obj, { input }, context) => {
       try {
         const session = context.driver.session();
         // const salt = await bcryptjs.getSalt(10);

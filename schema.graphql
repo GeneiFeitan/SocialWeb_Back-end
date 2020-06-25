@@ -14,6 +14,7 @@ type User {
 type Group {
   groupId: ID!
   name: String!
+  privacidad:Boolean!
   active: Boolean!
   members: [Belongs]
 }
@@ -77,10 +78,11 @@ type Query {
     )
   userById(id: ID!): User
   obtenerUsuario(token: String!): User
+  getUser:User
 }
 
 type Mutation {
-  NuevoUsuario(input: UserInput): User
+  newUser(input: UserInput): User
   mergeUserToDepartmen(userIds: ID!, departmentIds: ID!): Department
     @cypher(
       statement: "MATCH (u:User {userId:$userIds}) MATCH (d:Department {departmentId:$departmentIds}) MERGE (u)-[:WORKS]->(d) return d"
