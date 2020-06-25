@@ -41,7 +41,7 @@ type Token {
   token: String
 }
 
-input AuntenticarInput {
+input AuthInput {
   email: String!
   password: String!
 }
@@ -91,7 +91,7 @@ type Mutation {
     name: String
     status: String
   ): [ID]
-  autenticarUsuario(input: AuntenticarInput): String
+  authUser(input: AuthInput): Token
   CreateUserandAddtoDepartmen(
     departmentId: ID!
     userId: ID!
