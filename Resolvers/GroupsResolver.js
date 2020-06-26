@@ -4,6 +4,7 @@ export default {
   Query: {
     SearchLeader: async (obj, {users}, context, info) => {
       try {
+        console.log('aaaaaaaaaaaa')
         let resps =await Promise.all(users.map(async (user) => {
           const session = context.driver.session();
           const resp = await session.run(
