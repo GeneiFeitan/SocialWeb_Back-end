@@ -105,3 +105,5 @@ createGroup(userId:ID!):User
       statement:"MATCH (a:User {userId:$userId}) MATCH (a)-[:WORKS]->(b) MATCH (b)<-[:HEADER]-(n) RETURN n"
 
     )
+
+    AAAAAAAAAAAAAAAAAAAAAAAAA
