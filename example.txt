@@ -1,0 +1,107 @@
+CREATE CONSTRAINT ON (u:User) ASSERT u.correo IS UNIQUE
+CREATE CONSTRAINT ON (d:Department) ASSERT d.name IS UNIQUE
+
+
+
+CREATE (Ruben:User { userId: 1,name: "devops",
+  lastName:"upax",
+  email:"dev1@gmail.com",
+  password:"123",
+  active: true,
+  exists: true,
+  employeeNumber: "12345"})
+CREATE (Juan:User { userId: 2, name: "devops",
+  lastName:"upax",
+  email:"dev2@gmail.com",
+  password:"123",
+  active: true,
+  exists: true,
+  employeeNumber: "12345" })
+CREATE (Osiris:User { userId: 3, name: "devops",
+  lastName:"upax",
+  email:"dev3@gmail.com",
+  password:"123",
+  active: true,
+  exists: true,
+  employeeNumber: "12345"})
+
+
+CREATE (Ri:User { userId: 5, name: "devops",
+  lastName:"upax",
+  email:"dev4@gmail.com",
+  password:"123",
+  active: true,
+  exists: true,
+  employeeNumber: "12345" })
+
+CREATE (Mario:User { userId: 4, name: "devops",
+  lastName:"upax",
+  email:"dev5@gmail.com",
+  password:"123",
+  active: true,
+  exists: true,
+  employeeNumber: "12345"})
+
+CREATE (Sistemas:Department{departmentId:22, name:'Sistemas',status:'Active'})
+
+
+CREATE (Group1:Group{groupId:1, name:'backend',status:'Active'})
+
+
+
+#relationDepartment
+
+MATCH(a:User) Where a.userId=2
+MATCH(b:Department) Where b.departmentId=22
+CREATE (a)-[:WORKS]->(b)
+
+MATCH(a:User) Where a.userId=3
+MATCH(b:Department) Where b.departmentId=22
+CREATE (a)-[:WORKS]->(b)
+
+MATCH(a:User) Where a.userId=1
+MATCH(b:Department) Where b.departmentId=22
+CREATE (a)-[:WORKS]->(b)
+
+
+MATCH(a:User) Where a.userId=4
+MATCH(b:Department) Where b.departmentId=22
+CREATE (a)-[:HEADER{role:['Leader']}]->(b)
+
+#relationGroup
+
+
+MATCH(a:User) Where a.userId=3
+MATCH(b:Group) Where b.groupId=1
+CREATE (a)-[:BELONGS]->(b)
+
+MATCH(a:User) Where a.userId=1
+MATCH(b:Group) Where b.groupId=1
+CREATE (a)-[:BELONGS]->(b)
+
+MATCH(a:User) Where a.userId=4
+MATCH(b:Group) Where b.groupId=1
+CREATE (a)-[:MODERATOR{role:['Moderator']}]->(b)
+
+
+
+
+Ver propiedades de la base de datos
+CALL db.schema.nodeTypeProperties()
+
+
+
+HACER CAMPOS UNICOS
+CREATE CONSTRAINT ON (u:User) ASSERT u.correo IS UNIQUE
+CREATE CONSTRAINT ON (d:Department) ASSERT d.name IS UNIQUE
+
+
+
+
+
+
+createGroup(userId:ID!):User
+     @cypher(
+      statement:"MATCH (a:User {userId:$userId}) MATCH (a)-[:WORKS]->(b) MATCH (b)<-[:HEADER]-(n) RETURN n"
+
+    )

@@ -1,7 +1,6 @@
 type User {
   userId: ID
   name: String
-  lastName: String
   email: String!
   password: String!
   active: Boolean
@@ -50,7 +49,6 @@ input AuthInput {
 input UserInput {
   userId: ID
   name: String
-  lastName: String
   email: String!
   password: String!
   active: Boolean
@@ -79,6 +77,7 @@ type Query {
   userById(id: ID!): User
   obtenerUsuario(token: String!): User
   getUser:User
+  SearchLeader(users: [ID]): [User]
 }
 
 type Mutation {

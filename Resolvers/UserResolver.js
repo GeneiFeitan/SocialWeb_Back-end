@@ -42,25 +42,31 @@ export default {
   Mutation: {
     newUser: async (obj, { input }, context) => {
       try {
+        console.log("entra");
+        
         const session = context.driver.session();
         // const salt = await bcryptjs.getSalt(10);
         input.password = await bcryptjs.hash(input.password, 10);
-        const res = await session.run(
-          "CREATE (n:User {userId:$userId, name:$name, lastName:$lastName,email:$email,password:$password,active:$active,exists:$exists,employeeNumber:$employeeNumber}) RETURN n",
+        const re = await session.run(
+          "CREATE (n:User {userId:$userId, name:$name,email:$email,password:$password,active:$active,exists:$exists,employeeNumber:$employeeNumber}) RETURN n",
           {
             userId: input.userId,
             name: input.name,
-            lastName: input.lastName,
             email: input.email,
             password: input.password,
             active: input.active,
             exists: input.exists,
-            employeeNumber: input.employeeNumber,
+            employeeNumber: input.employeeNumber
           }
         );
+        console.log(JSON.stringify(re));
+        console.log("sale");
+        
         session.close();
-        return res;
+        return input;
       } catch (e) {
+        console.log(e);
+        
         throw new Error("No se pudo crear usuario!");
       }
     },
