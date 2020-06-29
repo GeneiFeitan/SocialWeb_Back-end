@@ -24,7 +24,7 @@ const schema = makeAugmentedSchema({
         if(token) {
             try {
                 const user = jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
-                // console.log(usuario);
+                console.log(usuario);
                 return {
                     user
                 }
@@ -32,6 +32,9 @@ const schema = makeAugmentedSchema({
                 console.log('Hubo un error');
                 console.log(error);
             }
+        }
+        else{
+            console.log('puto');
         }
     },
     config: {

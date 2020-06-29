@@ -106,4 +106,3 @@ createGroup(userId:ID!):User
 
     )
 
-    AAAAAAAAAAAAAAAAAAAAAAAAA

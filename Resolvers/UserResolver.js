@@ -70,7 +70,7 @@ export default {
         throw new Error("No se pudo crear usuario!");
       }
     },
-    authUser: async (_, { input }, context) => {
+    authUser: async (obj, { input }, context, info) => {
       try {
         const { email, password } = input;
         const session = context.driver.session();
@@ -78,8 +78,9 @@ export default {
           email: input.email,
         });
         session.close();
+  
         if (!res.records.length) {
-          throw new Error("El correo no existe!");
+            return new Error("El correo no existe!");
         }
         // validar contraseña
         const user = res.records[0]._fields[0].properties;
@@ -88,7 +89,7 @@ export default {
           user.password
         );
         if (!passwordCorret) {
-          throw new Error("el password no es correcto");
+          return new Error("el password no es correcto");
         }
         return {
           token: crearToken(user, process.env.SECRETWORD, "24h"),
