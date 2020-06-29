@@ -93,6 +93,7 @@ type Mutation {
     status: String
   ): [ID]
   authUser(input: AuthInput): Token
+  updateUser(input: UserInput): User
   CreateUserandAddtoDepartmen(
     departmentId: ID!
     userId: ID!

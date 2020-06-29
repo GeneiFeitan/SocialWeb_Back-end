@@ -26,7 +26,7 @@ export default {
         return userId;
       } catch (error) {
         console.log(error);
-        throw new Error("No se pudo obtener el usuario");
+        return new Error("No se pudo obtener el usuario");
       }
     },
     getUser: async (_,{},ctx)=>{
@@ -40,10 +40,36 @@ export default {
   },
 
   Mutation: {
+    updateUser: async (obj, {input}, context)=>{
+      try {
+        console.log("update user");
+        const res = await session.run("MATCH(n:User {email:$email}) RETURN n", {
+          email: input.email,
+        });
+        session.close();
+        if (!res.records.length) {
+          return new Error("El correo no existe!");
+        }
+        input.password = await bcryptjs.hash(input.password, 10);
+        const mutation = await session.run(
+          "MATCH(n:User {email:$email}) RETURN n SET n.password = $password RETURN n",
+          {
+            email: input.email,
+            password: input.password
+          }
+        );
+        console.log("mutation: "+mutation);
+        console.log("ok");
+        session.close();
+        return input;
+      } catch (error) {
+        console.log(error);
+        return new Error("No se pudo actualizar!");
+      }
+    }, 
     newUser: async (obj, { input }, context) => {
       try {
         console.log("entra");
-        
         const session = context.driver.session();
         // const salt = await bcryptjs.getSalt(10);
         input.password = await bcryptjs.hash(input.password, 10);
@@ -66,11 +92,11 @@ export default {
         return input;
       } catch (e) {
         console.log(e);
-        
-        throw new Error("No se pudo crear usuario!");
+        return new Error("No se pudo crear usuario!");
       }
     },
-    authUser: async (_, { input }, context) => {
+    
+    authUser: async (obj, { input }, context, info) => {
       try {
         const { email, password } = input;
         const session = context.driver.session();
@@ -78,8 +104,9 @@ export default {
           email: input.email,
         });
         session.close();
+  
         if (!res.records.length) {
-          throw new Error("El correo no existe!");
+            return new Error("El correo no existe!");
         }
         // validar contraseña
         const user = res.records[0]._fields[0].properties;
@@ -88,13 +115,13 @@ export default {
           user.password
         );
         if (!passwordCorret) {
-          throw new Error("el password no es correcto");
+          return new Error("el password no es correcto");
         }
         return {
           token: crearToken(user, process.env.SECRETWORD, "24h"),
         };
       } catch (error) {
-        throw new Error("No se puedo autenticar");
+        return new Error("No se puedo autenticar");
       }
     },
     mergeUserToDepartmen: async (obj, args, context, info) => {

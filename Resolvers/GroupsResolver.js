@@ -29,10 +29,6 @@ export default {
           }
         }));
         console.log(resps);
-
-        resps.indexOf(elemen=>{
-          
-        })
         return resps;
       } catch (error) {}
     }
