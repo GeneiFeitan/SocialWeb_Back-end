@@ -17,24 +17,24 @@ const app = express();
 const schema = makeAugmentedSchema({
     typeDefs,
     resolvers,
-    context:({req})=>{
+    context: async({req})=>{
         // console.log(req.headers['authorization'])
         // console.log(req.headers);
         const token = req.headers['authorization'] || '';
-        if(token) {
+        if(token !=="null") {
             try {
-                const user = jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
+                const user = await jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
                 console.log(usuario);
                 return {
                     user
                 }
             } catch (error) {
                 console.log('Hubo un error');
-                console.log(error);
+                // console.log(error);
             }
         }
         else{
-            console.log('puto');
+            console.log('error');
         }
     },
     config: {
@@ -63,7 +63,7 @@ const server = new ApolloServer({
 // Specify host, port and path for GraphQL endpoint
 const port = process.env.GRAPHQL_SERVER_PORT || 80
 const path = process.env.GRAPHQL_SERVER_PATH || '/graphql'
-const host = process.env.GRAPHQL_SERVER_HOST || 'localhost'
+const host = process.env.GRAPHQL_SERVER_HOST || '10.89.52.46'
 
 /*
  * Optionally, apply Express middleware for authentication, etc

@@ -5,9 +5,17 @@ type User {
   password: String!
   active: Boolean
   exists: Boolean
+  rol:String
   employeeNumber: String
   department: Works
   groups: [Belongs]
+  notas:[CreateNote]
+}
+
+type Usuario{
+  userId: ID
+  name: String
+  email: String
 }
 
 type Group {
@@ -23,6 +31,19 @@ type Department {
   name: String
   active: Boolean
   members: [Works]
+}
+
+type Note{
+  title: String
+  text: String
+  date:String
+  active:Boolean
+}
+
+type CreateNote @relation(name:"CREATES"){
+  from: User
+  to: Note
+  created: String
 }
 
 type Works @relation(name: "WORKS") {
@@ -54,6 +75,7 @@ input UserInput {
   active: Boolean
   exists: Boolean
   employeeNumber: String
+  rol:String
 }
 
 input GroupInput {
@@ -68,7 +90,15 @@ input DepartmentInput {
   active: Boolean
 }
 
+input NoteInput{
+  noteId:ID
+  title: String
+  text: String
+  user: String
+}
+
 type Query {
+  # usuarios
   allUser(first: Int = 4, offset: Int = 0): [User]
   userByname(name: String, idUser: ID = 1000): [User]
     @cypher(
@@ -106,4 +136,6 @@ type Mutation {
     )
 
   CreaGroupAndAddUsers(users: [ID], inputGroup: GroupInput): Group
+  CreateNote(input: NoteInput):Note
+  EditNote(input:NoteInput):Note
 }
