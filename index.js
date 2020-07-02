@@ -17,7 +17,6 @@ const app = express();
 const schema = makeAugmentedSchema({
     typeDefs,
     resolvers,
-<<<<<<< HEAD
     // context:({req})=>{
     //     // console.log(req.headers['authorization'])
     //     // console.log(req.headers);
@@ -38,28 +37,6 @@ const schema = makeAugmentedSchema({
     //         console.log('aaa');
     //     }
     // },
-=======
-    context: async({req})=>{
-        // console.log(req.headers['authorization'])
-        // console.log(req.headers);
-        const token = req.headers['authorization'] || '';
-        if(token !=="null") {
-            try {
-                const user = await jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
-                console.log(usuario);
-                return {
-                    user
-                }
-            } catch (error) {
-                console.log('Hubo un error');
-                // console.log(error);
-            }
-        }
-        else{
-            console.log('error');
-        }
-    },
->>>>>>> 3b2f80b31be10a3570e1a438b34ce7e973533b5f
     config: {
         mutation: true,
         query: {
@@ -79,7 +56,6 @@ const driver = neo4j.driver(
 
 const server = new ApolloServer({
     schema,
-<<<<<<< HEAD
     context:({ req }) =>{
         return {
                     driver,
@@ -87,15 +63,12 @@ const server = new ApolloServer({
             };
     }
     
-=======
-    context: { driver}    
->>>>>>> 3b2f80b31be10a3570e1a438b34ce7e973533b5f
 });
 
 // Specify host, port and path for GraphQL endpoint
 const port = process.env.GRAPHQL_SERVER_PORT || 80
 const path = process.env.GRAPHQL_SERVER_PATH || '/graphql'
-const host = process.env.GRAPHQL_SERVER_HOST || '10.89.52.46'
+const host = process.env.GRAPHQL_SERVER_HOST || 'localhost'
 
 /*
  * Optionally, apply Express middleware for authentication, etc
