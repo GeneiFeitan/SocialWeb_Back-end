@@ -56,8 +56,7 @@ const driver = neo4j.driver(
 
 const server = new ApolloServer({
     schema,
-    context: { driver}
-    
+    context: { driver}    
 });
 
 // Specify host, port and path for GraphQL endpoint

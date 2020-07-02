@@ -10,7 +10,7 @@ export const resolvers = {
 // Querys
 Object.assign(resolvers.Query, UserResolver.Query);
 Object.assign(resolvers.Query, GroupRsesolver.Query);
-
+Object.assign(resolvers.Query, NotesResolver.Query);
 //  Mutations
 
 Object.assign(resolvers.Mutation, UserResolver.Mutation);

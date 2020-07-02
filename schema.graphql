@@ -97,6 +97,11 @@ input NoteInput{
   user: String
 }
 
+input UserEInput{
+  userId:String!
+  email:String!
+}
+
 type Query {
   # usuarios
   allUser(first: Int = 4, offset: Int = 0): [User]
@@ -108,9 +113,11 @@ type Query {
   obtenerUsuario(token: String!): User
   getUser:User
   SearchLeader(users: [ID]): [User]
+  AllNotesActiveByUser(input: UserEInput):[Note]
 }
 
 type Mutation {
+  # user
   newUser(input: UserInput): User
   mergeUserToDepartmen(userIds: ID!, departmentIds: ID!): Department
     @cypher(
@@ -136,6 +143,9 @@ type Mutation {
     )
 
   CreaGroupAndAddUsers(users: [ID], inputGroup: GroupInput): Group
+  DeleteUser(input: UserEInput):User
+  #Notes
   CreateNote(input: NoteInput):Note
   EditNote(input:NoteInput):Note
+  DeleteNote(input:NoteInput):Note
 }

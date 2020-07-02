@@ -29,18 +29,18 @@ export default {
         return new Error("No se pudo obtener el usuario");
       }
     },
-    getUser: async (_,{},ctx)=>{
+    getUser: async (_, {}, ctx) => {
       try {
         console.log(ctx.user);
         return ctx.user;
       } catch (error) {
         throw new Error("No se pudo obtener el usuario");
       }
-    }
+    },
   },
 
   Mutation: {
-    updateUser: async (obj, {input}, context)=>{
+    updateUser: async (obj, { input }, context) => {
       try {
         console.log("update user");
         // console.log(": "+JSON.stringify(input));
@@ -64,13 +64,13 @@ export default {
         session.close();
         const data = mutation.records[0]._fields[0].properties;
         delete data.password;
-        console.log(data); 
+        console.log(data);
         return data;
       } catch (error) {
         console.log(error);
         return new Error("No se pudo actualizar!");
       }
-    }, 
+    },
 
     newUser: async (obj, { input }, context) => {
       try {
@@ -89,32 +89,34 @@ export default {
             exists: input.exists,
             employeeNumber: input.employeeNumber,
             rol: input.rol
-            
           }
         );
 
         session.close();
         const data = res.records[0]._fields[0].properties;
         delete data.password;
-        console.log(data); 
+        console.log(data);
         return data;
       } catch (e) {
         console.log(e);
         return new Error(e);
       }
     },
-    
+
     authUser: async (obj, { input }, context, info) => {
       try {
         const { email, password } = input;
         const session = context.driver.session();
-        const usuario = await session.run("MATCH(n:User {email:$email}) RETURN n", {
-          email: input.email,
-        });
+        const usuario = await session.run(
+          "MATCH(n:User {email:$email}) RETURN n",
+          {
+            email: input.email
+          }
+        );
         session.close();
-  
+
         if (!usuario.records.length) {
-            return new Error("El correo no existe!");
+          return new Error("El correo no existe!");
         }
         // validar contraseña
         const user = usuario.records[0]._fields[0].properties;
@@ -150,7 +152,29 @@ export default {
         return resp;
       } catch (error) {
         console.log(error);
-        return new Error(error)
+        return new Error(error);
+      }
+    },
+
+    DeleteUser: async (obj, { input }, context) => {
+      try {
+        console.log("Delete User");
+        console.log(input);
+        const session = context.driver.session();
+        const user = await session.run(
+          "MATCH(u:User {userId:$userId}) SET u.active=$active  RETURN u",
+          {
+            userId: input.userId,
+            active: false
+          }
+        );
+        session.close();
+        const data = user.records[0]._fields[0].properties;
+        console.log(data);
+        return data;
+      } catch (error) {
+        console.log(error);
+        return new Error(error);
       }
     },
   },
