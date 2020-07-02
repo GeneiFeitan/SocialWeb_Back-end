@@ -51,18 +51,19 @@ export default {
         const session = context.driver.session();
 
         const resp = await session.run(
-          "MERGE (Grupo:Group{groupId:$groupid, name:$name,active:$active}) RETURN Grupo",
+          'MATCH (u:User) WHERE u.userId=$creator MERGE (Grupo:Group{groupId:$groupid, name:$name,active:$active}) MERGE (u)-[:BELONGS{role:"Creator"}]->(Grupo) RETURN Grupo,u',
           {
             groupid: args.inputGroup.groupId,
             name: args.inputGroup.name,
             active: args.inputGroup.active,
+            creator: args.creator
           }
         );
         session.close();
 
-        args.users.map(async (x) => {
+       const resps= await Promise.all(args.users.map(async (x) => {
           const session2 = context.driver.session();
-          await session2.run(
+          const resp2= await session2.run(
             "MATCH(u:User) WHERE u.userId=$userId MATCH (g:Group) WHERE g.groupId=$groupid  MERGE (u)-[:BELONGS]->(g) RETURN g",
             {
               userId: x,
@@ -70,7 +71,12 @@ export default {
             }
           );
           session.close();
-        });
+          if (resp.records.length > 0) {
+            return resp2.records[0]._fields[0].properties;
+          } 
+
+        }));
+        return resps[0];
       } catch (e) {
         console.log(e);
       }

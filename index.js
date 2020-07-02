@@ -17,26 +17,26 @@ const app = express();
 const schema = makeAugmentedSchema({
     typeDefs,
     resolvers,
-    context:({req})=>{
-        // console.log(req.headers['authorization'])
-        // console.log(req.headers);
-        const token = req.headers['authorization'] || '';
-        if(token) {
-            try {
-                const user = jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
-                console.log(usuario);
-                return {
-                    user
-                }
-            } catch (error) {
-                console.log('Hubo un error');
-                console.log(error);
-            }
-        }
-        else{
-            console.log('puto');
-        }
-    },
+    // context:({req})=>{
+    //     // console.log(req.headers['authorization'])
+    //     // console.log(req.headers);
+    //     const token = req.headers['authorization'] || '';
+    //     if(token) {
+    //         try {
+    //             const user = jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
+    //             console.log(usuario);
+    //             return {
+    //                 user
+    //             }
+    //         } catch (error) {
+    //             console.log('Hubo un error');
+    //             console.log(error);
+    //         }
+    //     }
+    //     else{
+    //         console.log('aaa');
+    //     }
+    // },
     config: {
         mutation: true,
         query: {
@@ -46,17 +46,22 @@ const schema = makeAugmentedSchema({
 });
 
 const driver = neo4j.driver(
-    process.env.NEO4J_URI || "bolt://localhost:7687",
+    process.env.NEO4J_URI || "bolt://localhost:11005",
     neo4j.auth.basic(
         process.env.NEO4J_USER || "neo4j", 
-        process.env.NEO4J_PASSWORD || "neo4j2"
+        process.env.NEO4J_PASSWORD || "123456"
     )
 );
 
 
 const server = new ApolloServer({
     schema,
-    context: { driver}
+    context:({ req }) =>{
+        return {
+                    driver,
+                    req
+            };
+    }
     
 });
 

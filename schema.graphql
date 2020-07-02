@@ -5,9 +5,27 @@ type User {
   password: String!
   active: Boolean
   exists: Boolean
+  rol:String
   employeeNumber: String
-  department: Works
+  area: Works
   groups: [Belongs]
+  publications:[Writes]
+  comments: [Makes]
+}
+
+type Area{
+areaId:ID!
+name: String
+members: [Works]
+active: Boolean
+department:Indepartment
+}
+
+type Department {
+  departmentId: ID!
+  name: String
+  active: Boolean
+  areas: [Indepartment]
 }
 
 type Group {
@@ -18,17 +36,49 @@ type Group {
   members: [Belongs]
 }
 
-type Department {
-  departmentId: ID!
-  name: String
-  active: Boolean
-  members: [Works]
+type Publication{
+publicationId:ID
+text: String
+author: Writes
+comments:[Comments]
+
+}
+
+type Comment{
+commentId:ID
+text: String
+commen: Comments
+user:Makes
 }
 
 type Works @relation(name: "WORKS") {
   from: User
+  to: Area
+  role: String
+}
+
+type Indepartment @relation(name: "IN_DEPARTMENT") {
+  from: Area
   to: Department
   role: String
+}
+
+type Writes @relation(name: "WRITES") {
+ from: User
+ to: Publication
+ date: String
+}
+
+type Comments @relation(name: "COMMENTS") {
+ from: Comment
+ to: Publication
+ date: String
+}
+
+type Makes @relation(name: "MAKES") {
+ from: User
+ to: Comment
+ date: String
 }
 
 type Belongs @relation(name: "BELONGS") {
@@ -54,6 +104,7 @@ input UserInput {
   active: Boolean
   exists: Boolean
   employeeNumber: String
+  rol:String
 }
 
 input GroupInput {
@@ -62,10 +113,42 @@ input GroupInput {
   active: Boolean!
 }
 
+input PublicationInput {
+  author: String!
+  text: String!
+  publicationId:ID
+}
+
+input CommentInput {
+  author: String!
+  commentId:ID
+  text: String!
+  publicationId: ID
+}
+
+
 input DepartmentInput {
   departmentId: ID!
   name: String!
   active: Boolean
+}
+
+input AreaInput{
+  areaId:ID!
+  name: String
+  active: Boolean
+}
+
+input UserToAreaInput{
+  areaId: ID!
+  userId: ID
+  name: String
+  email: String!
+  password: String!
+  active: Boolean
+  exists: Boolean
+  employeeNumber: String
+  rol:String
 }
 
 type Query {
@@ -86,24 +169,13 @@ type Mutation {
     @cypher(
       statement: "MATCH (u:User {userId:$userIds}) MATCH (d:Department {departmentId:$departmentIds}) MERGE (u)-[:WORKS]->(d) return d"
     )
-  createGroupAndAddUsers(
-    users: [ID]
-    groupId: ID!
-    name: String
-    status: String
-  ): [ID]
+
   authUser(input: AuthInput): Token
   updateUser(input: UserInput): User
-  CreateUserandAddtoDepartmen(
-    departmentId: ID!
-    userId: ID!
-    employeeNumber: String
-    name: String
-    status: String
-  ): User
-    @cypher(
-      statement: "MATCH (d:Department{departmentId:$departmentId}) MERGE (u:User{userId:$userId, name:$name,employeeNumber:$employeeNumber,status:$status}) MERGE (u)-[:WORKS]->(d) RETURN u"
-    )
-
-  CreaGroupAndAddUsers(users: [ID], inputGroup: GroupInput): Group
+  CreateUserAndAddtoArea(input:UserToAreaInput): User
+  CreaGroupAndAddUsers(users: [ID], creator:ID, inputGroup: GroupInput): Group
+  MakePublication(input: PublicationInput):Publication
+  CommentPublication(input: CommentInput):Comment
+  AddUsersToArea(input:ID):Area
+  CreateAreaAndAddUsers(users:[ID], areaInput: AreaInput,departmentId:ID):Area
 }
