@@ -30,16 +30,14 @@ export default {
         );
         // console.log(resps);
 
-       let indx= resps.findIndex((elemen) =>
-            elemen.name==="");
+        let indx = resps.findIndex((elemen) => elemen.name === "");
 
-            while( indx!=-1 ){
-              resps.splice(indx,1);
-              indx= resps.findIndex((elemen) =>
-              elemen.name==="");
-            }
+        while (indx != -1) {
+          resps.splice(indx, 1);
+          indx = resps.findIndex((elemen) => elemen.name === "");
+        }
 
-            // console.log(resps);
+        // console.log(resps);
         return resps;
       } catch (error) {}
     },
@@ -49,6 +47,7 @@ export default {
     CreaGroupAndAddUsers: async (obj, args, context, info) => {
       try {
         const session = context.driver.session();
+        console.log(JSON.stringify(args));
 
         const resp = await session.run(
           'MATCH (u:User) WHERE u.userId=$creator MERGE (Grupo:Group{groupId:$groupid, name:$name,active:$active}) MERGE (u)-[:BELONGS{role:"Creator"}]->(Grupo) RETURN Grupo,u',

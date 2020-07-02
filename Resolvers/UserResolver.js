@@ -1,8 +1,8 @@
 const { neo4jgraphql } = require("neo4j-graphql-js");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-import tokenService from '../services/token';
-import auth from '../Middleware/Auth';
+import tokenService from "../services/token";
+import auth from "../Middleware/Auth";
 
 require("dotenv").config({ path: "variables.env" });
 
@@ -31,18 +31,18 @@ export default {
         return new Error("No se pudo obtener el usuario");
       }
     },
-    getUser: async (_,{},ctx)=>{
+    getUser: async (_, {}, ctx) => {
       try {
         console.log(ctx.user);
         return ctx.user;
       } catch (error) {
         throw new Error("No se pudo obtener el usuario");
       }
-    }
+    },
   },
 
   Mutation: {
-    updateUser: async (obj, {input}, context)=>{
+    updateUser: async (obj, { input }, context) => {
       try {
         console.log("update user");
         // console.log(": "+JSON.stringify(input));
@@ -58,7 +58,7 @@ export default {
           "MATCH(n:User {email:$email}) SET n.password = $password RETURN n",
           {
             email: input.email,
-            password: input.password
+            password: input.password,
           }
         );
         // console.log("mutation: "+mutation);
@@ -66,13 +66,13 @@ export default {
         session.close();
         const data = mutation.records[0]._fields[0].properties;
         delete data.password;
-        console.log(data); 
+        console.log(data);
         return data;
       } catch (error) {
         console.log(error);
         return new Error("No se pudo actualizar!");
       }
-    }, 
+    },
 
     newUser: async (obj, { input }, context) => {
       try {
@@ -90,33 +90,35 @@ export default {
             active: input.active,
             exists: input.exists,
             employeeNumber: input.employeeNumber,
-            rol: input.rol
-            
+            rol: input.rol,
           }
         );
 
         session.close();
         const data = res.records[0]._fields[0].properties;
         delete data.password;
-        console.log(data); 
+        console.log(data);
         return data;
       } catch (e) {
         console.log(e);
         return new Error(e);
       }
     },
-    
+
     authUser: async (obj, { input }, context, info) => {
       try {
         const { email, password } = input;
         const session = context.driver.session();
-        const usuario = await session.run("MATCH(n:User {email:$email}) RETURN n", {
-          email: input.email,
-        });
+        const usuario = await session.run(
+          "MATCH(n:User {email:$email}) RETURN n",
+          {
+            email: input.email,
+          }
+        );
         session.close();
-  
+
         if (!usuario.records.length) {
-            return new Error("El correo no existe!");
+          return new Error("El correo no existe!");
         }
         // validar contraseña
         const user = usuario.records[0]._fields[0].properties;
@@ -145,7 +147,46 @@ export default {
       }
     },
 
-    CreateUserAndAddtoArea: async (obj, {input}, context, info) => {
+    CreateUserandAddtoDepartmen: async (obj, args, context, info) => {
+      try {
+        console.log(info);
+        const resp = await neo4jgraphql(obj, args, context, info);
+        return resp;
+      } catch (error) {
+        console.log(error);
+        return new Error(error);
+      }
+    },
+
+    DeleteUser: async (obj, { input }, context) => {
+      try {
+        console.log("Delete User");
+        console.log(input);
+        const session = context.driver.session();
+        const user = await session.run(
+          "MATCH(u:User {userId:$userId}) SET u.active=$active  RETURN u",
+          {
+            userId: input.userId,
+            active: false,
+          }
+        );
+        session.close();
+        const data = user.records[0]._fields[0].properties;
+        console.log(data);
+        return data;
+      } catch (error) {
+        console.log(error);
+        return new Error(error);
+      }
+    },
+
+    AddUsersToArea: async (obj, args, context, info) => {
+      try {
+        return auth.verifyUser(context.req, context.driver);
+      } catch (error) {}
+    },
+
+    CreateUserAndAddtoArea: async (obj, { input }, context, info) => {
       try {
         console.log("entra");
         const session = context.driver.session();
@@ -162,29 +203,19 @@ export default {
             exists: input.exists,
             employeeNumber: input.employeeNumber,
             rol: input.rol,
-            areaId: input.areaId
-            
+            areaId: input.areaId,
           }
         );
 
         session.close();
         const data = res.records[0]._fields[0].properties;
         delete data.password;
-        console.log(data); 
+        console.log(data);
         return data;
       } catch (e) {
         console.log(e);
         return new Error(e);
       }
     },
-
-    AddUsersToArea: async (obj, args, context, info) => {
-      try {
-
-       return auth.verifyUser(context.req,context.driver);
-      } catch (error) {
-        
-      }
-    }
   },
 };
