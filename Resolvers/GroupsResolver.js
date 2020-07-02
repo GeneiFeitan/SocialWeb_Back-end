@@ -30,16 +30,14 @@ export default {
         );
         // console.log(resps);
 
-       let indx= resps.findIndex((elemen) =>
-            elemen.name==="");
+        let indx = resps.findIndex((elemen) => elemen.name === "");
 
-            while( indx!=-1 ){
-              resps.splice(indx,1);
-              indx= resps.findIndex((elemen) =>
-              elemen.name==="");
-            }
+        while (indx != -1) {
+          resps.splice(indx, 1);
+          indx = resps.findIndex((elemen) => elemen.name === "");
+        }
 
-            // console.log(resps);
+        // console.log(resps);
         return resps;
       } catch (error) {}
     },
@@ -49,6 +47,7 @@ export default {
     CreaGroupAndAddUsers: async (obj, args, context, info) => {
       try {
         const session = context.driver.session();
+        console.log(JSON.stringify(args));
 
         const resp = await session.run(
           "MERGE (Grupo:Group{groupId:$groupid, name:$name,active:$active}) RETURN Grupo",
@@ -60,17 +59,23 @@ export default {
         );
         session.close();
 
-        args.users.map(async (x) => {
-          const session2 = context.driver.session();
-          await session2.run(
-            "MATCH(u:User) WHERE u.userId=$userId MATCH (g:Group) WHERE g.groupId=$groupid  MERGE (u)-[:BELONGS]->(g) RETURN g",
-            {
-              userId: x,
-              groupid: args.inputGroup.groupId,
+        const resps = await Promise.all(
+          args.users.map(async (x) => {
+            const session2 = context.driver.session();
+            const resp2 = await session2.run(
+              "MATCH(u:User) WHERE u.userId=$userId MATCH (g:Group) WHERE g.groupId=$groupid  MERGE (u)-[:BELONGS]->(g) RETURN g",
+              {
+                userId: x,
+                groupid: args.inputGroup.groupId,
+              }
+            );
+            session.close();
+            if (resp.records.length > 0) {
+              // return resp2.records[0]._fields[0].properties;
             }
-          );
-          session.close();
-        });
+          })
+        );
+        return resps[0];
       } catch (e) {
         console.log(e);
       }

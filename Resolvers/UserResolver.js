@@ -120,6 +120,8 @@ export default {
         }
         // validar contraseña
         const user = usuario.records[0]._fields[0].properties;
+        console.log(JSON.stringify(user));
+        
         const passwordCorret = await bcryptjs.compare(
           input.password,
           user.password
