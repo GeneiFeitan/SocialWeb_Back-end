@@ -6,46 +6,40 @@ export default {
   },
 
   Mutation: {
-      
-    MakePublication: async (obj, { input}, context, info)=>{
 
-        try {            
+   CommentPublication: async (obj, {input}, context, info)=>{
+        try {
+
             const session = context.driver.session();
             let date = new Date();
             date=date.toString().substring(3,15);
             const response = await session.run(
-                "MATCH (u:User) WHERE u.userId=$userId CREATE (p:Publication {publicationId:$id,text:$text,type:$type}) CREATE (u)-[:MAKES{date:$date}]->(p) RETURN p",
-                {
+                "MATCH(u:User) WHERE u.userId=$userId MATCH (p:Publication) WHERE p.publicationId=$publicationId CREATE (c:Comment{commentId:$commentId,text:$text}) CREATE (u)-[:WRITES{date:$date}]->(c)-[:COMMENTS]->(p) return c",{
                     userId: input.author,
+                    publicationId: input.publicationId,
+                    commentId: input.commentId,
                     text: input.text,
-                    id:input.publicationId,
-                    type:input.type,
                     date
                 }
             );
-            session.close();
-            console.log(response.records[0]._fields[0].properties);
-
-
-            return response.records[0]._fields[0].properties;
+          return response.records[0]._fields[0].properties;
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-
     },
 
+    TaggInComment: async (obj, { input }, context, info)=>{
 
-    TaggInPublication: async (obj, { input }, context, info)=>{
             try {
                 let date = new Date();
             date=date.toString().substring(3,15);
                 const session = context.driver.session();
 
                 const response= await session.run(
-                    "MATCH (from:User) where from.userId=$FromUserId MATCH (p:Publication) where p.publicationId=$publicationId Match (to:User) where to.userId=$ToUserId CREATE (from)-[:SHARES{date:$date}]->(p) CREATE (p)-[:SHARED_TO]->(to) RETURN from,to",
+                    "MATCH (from:User) where from.userId=$FromUserId MATCH (c:Comment) where c.CommentId=$CommentId Match (to:User) where to.userId=$ToUserId CREATE (from)-[:SHARES{date:$date}]->(p) CREATE (c)-[:SHARED_TO]->(to) RETURN from,to",
                     {
                         FromUserId: input.FromUserId,
-                        publicationId:input.PublicationId,
+                        CommentId:input.CommentId,
                         ToUserId: input.ToUserId,
                         date
                     }
@@ -62,7 +56,7 @@ export default {
             }
     },
 
-
+    
 
 
 

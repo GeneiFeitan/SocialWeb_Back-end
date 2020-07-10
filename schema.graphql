@@ -163,10 +163,16 @@ input CommentInput {
   publicationId: ID!
 }
 
-input TaggInput{
+input TaggPublicationInput{
   ToUserId: ID!
   FromUserId: ID!
   PublicationId: ID!
+}
+
+input TaggCommentInput{
+  ToUserId: ID!
+  FromUserId: ID!
+  CommentId: ID!
 }
 
 input DepartmentInput {
@@ -226,7 +232,8 @@ type Mutation {
 
   MakePublication(input: PublicationInput):Publication
   CommentPublication(input: CommentInput):Comment
-  TaggInPublication(input: TaggInput):Publication
+  TaggInPublication(input: TaggPublicationInput):Publication
+  TaggInComment(input: TaggCommentInput):Comment
 
 
 }
