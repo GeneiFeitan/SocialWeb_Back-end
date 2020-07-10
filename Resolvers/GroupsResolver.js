@@ -50,12 +50,11 @@ export default {
         console.log(JSON.stringify(args));
 
         const resp = await session.run(
-          'MATCH (u:User) WHERE u.userId=$creator MERGE (Grupo:Group{groupId:$groupid, name:$name,active:$active}) MERGE (u)-[:BELONGS{role:"Creator"}]->(Grupo) RETURN Grupo,u',
+          'MERGE (Grupo:Group{groupId:$groupid, name:$name,active:$active})RETURN Grupo',
           {
             groupid: args.inputGroup.groupId,
             name: args.inputGroup.name,
-            active: args.inputGroup.active,
-            creator: args.creator
+            active: args.inputGroup.active
           }
         );
         session.close();

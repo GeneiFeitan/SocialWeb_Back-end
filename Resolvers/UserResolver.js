@@ -81,14 +81,13 @@ export default {
         // const salt = await bcryptjs.getSalt(10);
         input.password = await bcryptjs.hash(input.password, 10);
         const res = await session.run(
-          "CREATE (n:User {userId:$userId, name:$name,email:$email,password:$password,active:$active,exists:$exists,employeeNumber:$employeeNumber,rol:$rol}) RETURN n",
+          "CREATE (n:User {userId:$userId, name:$name,email:$email,password:$password,active:$active,employeeNumber:$employeeNumber,rol:$rol}) RETURN n",
           {
             userId: input.userId,
             name: input.name,
             email: input.email,
             password: input.password,
             active: input.active,
-            exists: input.exists,
             employeeNumber: input.employeeNumber,
             rol: input.rol,
           }
@@ -137,26 +136,7 @@ export default {
       }
     },
 
-    mergeUserToDepartmen: async (obj, args, context, info) => {
-      try {
-        const res = await neo4jgraphql(obj, args, context, info);
-        return res;
-      } catch (error) {
-        console.log(error);
-        return new Error(error);
-      }
-    },
 
-    CreateUserandAddtoDepartmen: async (obj, args, context, info) => {
-      try {
-        console.log(info);
-        const resp = await neo4jgraphql(obj, args, context, info);
-        return resp;
-      } catch (error) {
-        console.log(error);
-        return new Error(error);
-      }
-    },
 
     DeleteUser: async (obj, { input }, context) => {
       try {
@@ -180,11 +160,7 @@ export default {
       }
     },
 
-    AddUsersToArea: async (obj, args, context, info) => {
-      try {
-        return auth.verifyUser(context.req, context.driver);
-      } catch (error) {}
-    },
+
 
     CreateUserAndAddtoArea: async (obj, { input }, context, info) => {
       try {
@@ -193,14 +169,13 @@ export default {
         // const salt = await bcryptjs.getSalt(10);
         input.password = await bcryptjs.hash(input.password, 10);
         const res = await session.run(
-          'MATCH (a:Area) WHERE a.areaId=$areaId CREATE (u:User {userId:$userId, name:$name,email:$email,password:$password,active:$active,exists:$exists,employeeNumber:$employeeNumber,rol:$rol}) MERGE (u)-[:WORKS{role:"Back Developer"}]->(a) RETURN u',
+          'MATCH (a:Area) WHERE a.areaId=$areaId CREATE (u:User {userId:$userId, name:$name,email:$email,password:$password,active:$active,employeeNumber:$employeeNumber,rol:$rol}) MERGE (u)-[:WORKS{role:"Back Developer"}]->(a) RETURN u',
           {
             userId: input.userId,
             name: input.name,
             email: input.email,
             password: input.password,
             active: input.active,
-            exists: input.exists,
             employeeNumber: input.employeeNumber,
             rol: input.rol,
             areaId: input.areaId,

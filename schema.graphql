@@ -2,16 +2,18 @@ type User {
   userId: ID
   name: String
   email: String!
-  password: String!
   active: Boolean
-  exists: Boolean
   rol:String
   employeeNumber: String
   area: Works
   groups: [Belongs]
-  publications:[Writes]
-  comments: [Makes]
-  notas:[CreateNote]
+  publications:[Makes]
+  comments: [Writes]
+  reports:[Reports]
+  taggeds:[Taggeds]
+  shares:[Shares]
+  react:[Reactions]
+
 }
 
 type Area{
@@ -29,16 +31,10 @@ type Department {
   areas: [Indepartment]
 }
 
-type Usuario{
-  userId: ID
-  name: String
-  email: String
-}
-
 type Group {
   groupId: ID!
   name: String!
-  privacidad:Boolean!
+  type: String
   active: Boolean!
   members: [Belongs]
 }
@@ -46,30 +42,24 @@ type Group {
 type Publication{
 publicationId:ID
 text: String
-author: Writes
-comments:[Comments]
+type: String
+author: Makes
+reactions:[Reactions]
+shared:[Shares]
+taggeds:Taggeds
+reports:[Reports]
 
 }
 
 type Comment{
 commentId:ID
 text: String
-commen: Comments
-user:Makes
+user:Writes
 }
 
-type Note{
-  title: String
-  text: String
-  date:String
-  active:Boolean
-}
 
-type CreateNote @relation(name:"CREATES"){
-  from: User
-  to: Note
-  created: String
-}
+
+#----------------------RELATIONSHIP------------------------------------------
 
 type Works @relation(name: "WORKS") {
   from: User
@@ -77,58 +67,67 @@ type Works @relation(name: "WORKS") {
   role: String
 }
 
+
+type Belongs @relation(name: "BELONGS") {
+  from: User
+  to: Group
+  role: String
+}
+
+
+
+type Makes @relation(name: "MAKES") {
+ from: User
+ to: Publication
+ date: String
+}
+
+type Writes @relation(name: "WRITES") {
+ from: User
+ to: Comment
+ date: String
+}
+
+type Reports @relation(name: "REPORTS"){
+  from: User
+  to: Publication
+}
+
+type Taggeds @relation(name: "TAGGEDS"){
+  from: User
+  to: Publication
+}
+
+type Tagged_to @relation(name: "TAGGED_TO"){
+from: Publication
+to: User
+}
+
+type Shares @relation(name: "SHARES"){
+  from : User
+  to: Publication
+  date: String
+}
+
+type Shares_to @relation(name: "SHARED_TO"){
+  from : Publication
+  to: User
+}
+
+type Reactions @relation(name: "REACTIONS"){
+  from: User
+  to: Publication
+}
+
 type Indepartment @relation(name: "IN_DEPARTMENT") {
   from: Area
   to: Department
   role: String
 }
+ 
 
-type Writes @relation(name: "WRITES") {
- from: User
- to: Publication
- date: String
-}
 
-type Comments @relation(name: "COMMENTS") {
- from: Comment
- to: Publication
- date: String
-}
-
-type Makes @relation(name: "MAKES") {
- from: User
- to: Comment
- date: String
-}
-
-type Belongs @relation(name: "BELONGS") {
-  from: User
-  to: Group
-  role: String
-}
-
-type Comments @relation(name: "COMMENTS") {
- from: Comment
- to: Publication
- date: String
-}
-
-type Makes @relation(name: "MAKES") {
- from: User
- to: Comment
- date: String
-}
-
-type Belongs @relation(name: "BELONGS") {
-  from: User
-  to: Group
-  role: String
-}
-
-type Token {
-  token: String
-}
-
+#----------------------------INPUTS------------------------------------
 input AuthInput {
   email: String!
   password: String!
@@ -140,7 +139,6 @@ input UserInput {
   email: String!
   password: String!
   active: Boolean
-  exists: Boolean
   employeeNumber: String
   rol:String
 }
@@ -152,18 +150,24 @@ input GroupInput {
 }
 
 input PublicationInput {
-  author: String!
-  text: String!
+  author: ID!
   publicationId:ID
+  text: String
+  type: String
 }
 
 input CommentInput {
-  author: String!
-  commentId:ID
+  author: ID!
+  commentId:ID!
   text: String!
-  publicationId: ID
+  publicationId: ID!
 }
 
+input TaggInput{
+  ToUserId: ID!
+  FromUserId: ID!
+  PublicationId: ID!
+}
 
 input DepartmentInput {
   departmentId: ID!
@@ -171,12 +175,7 @@ input DepartmentInput {
   active: Boolean
 }
 
-input NoteInput{
-  noteId:ID
-  title: String
-  text: String
-  user: String
-}
+
 
 input UserEInput{
   userId:String!
@@ -212,42 +211,22 @@ type Query {
   obtenerUsuario(token: String!): User
   getUser:User
   SearchLeader(users: [ID]): [User]
-  AllNotesActiveByUser(input: UserEInput):[Note]
+ # AllNotesActiveByUser(input: UserEInput):[Note]
 }
 
 type Mutation {
   # user
-  newUser(input: UserInput): User
-  mergeUserToDepartmen(userIds: ID!, departmentIds: ID!): Department
-    @cypher(
-      statement: "MATCH (u:User {userId:$userIds}) MATCH (d:Department {departmentId:$departmentIds}) MERGE (u)-[:WORKS]->(d) return d"
-    )
-
-  authUser(input: AuthInput): Token
   updateUser(input: UserInput): User
-  CreateUserandAddtoDepartmen(
-    departmentId: ID!
-    userId: ID!
-    employeeNumber: String
-    name: String
-    status: String
-  ): User
-    @cypher(
-      statement: "MATCH (d:Department{departmentId:$departmentId}) MERGE (u:User{userId:$userId, name:$name,employeeNumber:$employeeNumber,status:$status}) MERGE (u)-[:WORKS]->(d) RETURN u"
-    )
-
-  CreaGroupAndAddUsers(users: [ID], inputGroup: GroupInput): Group
-  DeleteUser(input: UserEInput):User
-  #Notes
-  CreateNote(input: NoteInput):Note
-  EditNote(input:NoteInput):Note
-  DeleteNote(input:NoteInput):Note
-  #GroupsResolver
+  newUser(input: UserInput): User
+  authUser(input: AuthInput): String
+  DeleteUser(input: UserEInput):User  
   CreateUserAndAddtoArea(input:UserToAreaInput): User
-  #CreaGroupAndAddUsers(users: [ID], creator:ID, inputGroup: GroupInput): Group
+
+
+
   MakePublication(input: PublicationInput):Publication
   CommentPublication(input: CommentInput):Comment
-  AddUsersToArea(input:ID):Area
-  CreateAreaAndAddUsers(users:[ID], areaInput: AreaInput,departmentId:ID):Area
+  TaggInPublication(input: TaggInput):Publication
+
 
 }
