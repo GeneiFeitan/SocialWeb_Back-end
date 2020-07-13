@@ -4,7 +4,7 @@ import AreaResolver from "./AreaResolver";
 import PublicationResolver from "./PublicationResolver";
 import NotesResolver from "./NotesResolver";
 import CommentResolver from './CommentResolver';
-
+import DevResolver from './DevResolver';
 
 export const resolvers = {
   Query: {},
@@ -24,3 +24,4 @@ Object.assign(resolvers.Mutation, UserResolver.Mutation);
 Object.assign(resolvers.Mutation, PublicationResolver.Mutation);
 Object.assign(resolvers.Mutation, CommentResolver.Mutation);
 // Object.assign(resolvers.Mutation, NotesResolver.Mutation);
+Object.assign(resolvers.Mutation, DevResolver.Mutation);

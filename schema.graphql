@@ -55,6 +55,7 @@ type Comment{
 commentId:ID
 text: String
 user:Writes
+reactions:[ReactionComment]
 }
 
 
@@ -117,6 +118,17 @@ type Shares_to @relation(name: "SHARED_TO"){
 type Reactions @relation(name: "REACTIONS"){
   from: User
   to: Publication
+  date:String
+  type:String
+  active:Boolean
+}
+
+type ReactionComment @relation(name:"REACTION_C"){
+  from: User
+  to: Comment
+  date: String
+  type:String
+  active:Boolean
 }
 
 type Indepartment @relation(name: "IN_DEPARTMENT") {
@@ -163,16 +175,22 @@ input CommentInput {
   publicationId: ID!
 }
 
-input TaggPublicationInput{
+input TaggInput{
   ToUserId: ID!
   FromUserId: ID!
   PublicationId: ID!
 }
 
-input TaggCommentInput{
-  ToUserId: ID!
-  FromUserId: ID!
-  CommentId: ID!
+input ReactPublicationInput{
+  FromUserId:ID!
+  PublicationId:ID!
+  type:String!
+}
+
+input ReactCommentInput{
+  FromUserId:ID!
+  CommentId:ID!
+  type:String!
 }
 
 input DepartmentInput {
@@ -232,8 +250,9 @@ type Mutation {
 
   MakePublication(input: PublicationInput):Publication
   CommentPublication(input: CommentInput):Comment
-  TaggInPublication(input: TaggPublicationInput):Publication
-  TaggInComment(input: TaggCommentInput):Comment
-
-
+  TaggInPublication(input: TaggInput):Publication
+  
+  #react
+  ReactToPublication(input: ReactPublicationInput):String
+  ReactToComment(input: ReactCommentInput):String
 }
