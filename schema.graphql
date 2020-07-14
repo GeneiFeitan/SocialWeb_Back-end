@@ -233,6 +233,9 @@ type Mutation {
   MakePublication(input: PublicationInput):Publication
   CommentPublication(input: CommentInput):Comment
   TaggInPublication(input: TaggPublicationInput):Publication
+  SharePublication(input: TaggPublicationInput):Publication
+
+
   TaggInComment(input: TaggCommentInput):Comment
 
 

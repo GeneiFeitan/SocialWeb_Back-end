@@ -1,5 +1,5 @@
-import { typeDefs} from './graphql-schema';
-import {resolvers} from './Resolvers/resolvers';
+import { typeDefs } from './graphql-schema';
+import { resolvers } from './Resolvers/resolvers';
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express';
 import dotenv from 'dotenv'
@@ -46,9 +46,9 @@ const schema = makeAugmentedSchema({
 });
 
 const driver = neo4j.driver(
-    process.env.NEO4J_URI || "bolt://localhost:11005",
+    process.env.NEO4J_URI || "bolt://localhost:7687",
     neo4j.auth.basic(
-        process.env.NEO4J_USER || "neo4j", 
+        process.env.NEO4J_USER || "neo4j",
         process.env.NEO4J_PASSWORD || "123456"
     )
 );
@@ -56,13 +56,13 @@ const driver = neo4j.driver(
 
 const server = new ApolloServer({
     schema,
-    context:({ req }) =>{
+    context: ({ req }) => {
         return {
-                    driver,
-                    req
-            };
+            driver,
+            req
+        };
     }
-    
+
 });
 
 // Specify host, port and path for GraphQL endpoint
@@ -78,5 +78,5 @@ const host = process.env.GRAPHQL_SERVER_HOST || 'localhost'
 server.applyMiddleware({ app, path })
 
 app.listen({ host, port, path }, () => {
-  console.log(`GraphQL server ready at http://${host}:${port}${path}`)
+    console.log(`GraphQL server ready at http://${host}:${port}${path}`)
 })
