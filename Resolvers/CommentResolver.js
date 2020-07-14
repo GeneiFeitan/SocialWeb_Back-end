@@ -37,9 +37,9 @@ export default {
                 const session = context.driver.session();
 
                 const response = await session.run(
-                    "MATCH (from:User) where from.userId=$FromUserId MATCH (c:Comment) where c.commentId=$CommentId Match (to:User) where to.userId=$ToUserId CREATE (from)-[:TAGGEDS{date:$date}]->(c) CREATE (c)-[:TAGGED_TO]->(to) RETURN from,to", {
+                    "MATCH (from:User) where from.userId=$FromUserId MATCH (c:Comment) where c.commentId=$commentId Match (to:User) where to.userId=$ToUserId CREATE (from)-[:TAGGEDS{date:$date}]->(c) CREATE (c)-[:TAGGED_TO]->(to) RETURN from,to", {
                         FromUserId: input.FromUserId,
-                        CommentId: input.CommentId,
+                        commentId: input.commentId,
                         ToUserId: input.ToUserId,
                         date
                     }
@@ -56,7 +56,30 @@ export default {
             }
         },
 
-
+        ReactToComment:async (_,{input},context)=>{
+            try {
+                const session = context.driver.session();
+                let date= new Date();
+                date= date.toString().substring(3,15);
+                console.log(input);
+                const mutation = await session.run(
+                    "MATCH(from:User) where from.userId=$FromUserId MATCH(c:Comment) WHERE c.commentId= $commentId  CREATE (from)-[:REACTION_C{date:$date,type: $type,active:true}]->(c) RETURN from,c",
+                    {
+                        FromUserId:input.FromUserId,
+                        commentId: input.commentId,
+                        type: input.type,
+                        date
+                    } 
+                )
+                session.close();
+                // const data = mutation.records[0]._fields[0].properties;
+                // console.log(data);
+                return "ok";
+            } catch (error) {
+                console.log(error);
+                throw new Error(error);
+            }
+        }
 
 
 

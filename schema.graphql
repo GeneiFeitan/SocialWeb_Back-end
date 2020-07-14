@@ -175,15 +175,22 @@ input CommentInput {
   publicationId: ID!
 }
 
-input TaggInput{
+input TaggPublicationInput{
   ToUserId: ID!
   FromUserId: ID!
-  PublicationId: ID!
+  publicationId: ID!
 }
+
+input TaggCommentInput{
+  ToUserId: ID!
+  FromUserId: ID!
+  commentId: ID!
+}
+
 
 input ReactPublicationInput{
   FromUserId:ID!
-  PublicationId:ID!
+  publicationId:ID!
   type:String!
 }
 
@@ -250,19 +257,14 @@ type Mutation {
 
   MakePublication(input: PublicationInput):Publication
   CommentPublication(input: CommentInput):Comment
-<<<<<<< HEAD
   TaggInPublication(input: TaggPublicationInput):Publication
   SharePublication(input: TaggPublicationInput):Publication
 
 
   TaggInComment(input: TaggCommentInput):Comment
 
-
-=======
-  TaggInPublication(input: TaggInput):Publication
   
   #react
   ReactToPublication(input: ReactPublicationInput):String
   ReactToComment(input: ReactCommentInput):String
->>>>>>> 3f5b69afcc1fc450c30e59790f7ad70871c67c27
 }

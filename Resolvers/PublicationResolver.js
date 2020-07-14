@@ -43,7 +43,7 @@ export default {
                 const response = await session.run(
                     "MATCH (from:User) where from.userId=$FromUserId MATCH (p:Publication) where p.publicationId=$publicationId Match (to:User) where to.userId=$ToUserId CREATE (from)-[:SHARES{date:$date}]->(p) CREATE (p)-[:SHARED_TO]->(to) RETURN from,to", {
                         FromUserId: input.FromUserId,
-                        publicationId: input.PublicationId,
+                        publicationId: input.publicationId,
                         ToUserId: input.ToUserId,
                         date
                     }
@@ -70,7 +70,7 @@ export default {
                 const response = await session.run(
                     "MATCH (from:User) where from.userId=$FromUserId MATCH (p:Publication) where p.publicationId=$publicationId Match (to:User) where to.userId=$ToUserId CREATE (from)-[:TAGGEDS{date:$date}]->(p) CREATE (p)-[:TAGGED_TO]->(to) RETURN from,to", {
                         FromUserId: input.FromUserId,
-                        publicationId: input.PublicationId,
+                        publicationId: input.publicationId,
                         ToUserId: input.ToUserId,
                         date
                     }
@@ -84,6 +84,32 @@ export default {
 
             } catch (error) {
                 console.log(error);
+            }
+        },
+
+        ReactToPublication: async(_,{input}, context)=>{
+            try {
+                const session = context.driver.session();
+                let date= new Date();
+                date= date.toString().substring(3,15);
+                console.log(input);
+                const mutation = await session.run(
+                    "MATCH(from:User) where from.userId=$FromUserId MATCH(p:Publication) WHERE p.publicationId= $publicationId  CREATE (from)-[:REACTIONS{date:$date, type:$type,active:true}]->(p) RETURN from,p",
+                    {
+                        FromUserId:input.FromUserId,
+                        publicationId: input.publicationId,
+                        type: input.type,
+                        date
+                    } 
+                )
+                session.close();
+                console.log(JSON.stringify(mutation));
+                const data=  mutation.records[0]._fields[0].properties;
+                console.log(data);
+                return "save";
+            } catch (error) {
+                console.log(error);
+                throw new Error(error)
             }
         },
 
