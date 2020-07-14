@@ -1,4 +1,5 @@
 const { neo4jgraphql } = require("neo4j-graphql-js");
+import token from '../Services/Token';
 
 export default {
     Query: {
@@ -90,6 +91,8 @@ export default {
         ReactToPublication: async(_,{input}, context)=>{
             try {
                 const session = context.driver.session();
+                const user=await token.decode(context.req.headers.token,context.driver);
+                console.log(user);
                 let date= new Date();
                 date= date.toString().substring(3,15);
                 console.log(input);

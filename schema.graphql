@@ -58,7 +58,9 @@ user:Writes
 reactions:[ReactionComment]
 }
 
-
+type Token {
+  token: String
+}
 
 #----------------------RELATIONSHIP------------------------------------------
 
@@ -196,7 +198,7 @@ input ReactPublicationInput{
 
 input ReactCommentInput{
   FromUserId:ID!
-  CommentId:ID!
+  commentId:ID!
   type:String!
 }
 
@@ -249,7 +251,7 @@ type Mutation {
   # user
   updateUser(input: UserInput): User
   newUser(input: UserInput): User
-  authUser(input: AuthInput): String
+  authUser(input: AuthInput): Token
   DeleteUser(input: UserEInput):User  
   CreateUserAndAddtoArea(input:UserToAreaInput): User
 
