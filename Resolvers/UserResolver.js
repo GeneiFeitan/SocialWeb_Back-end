@@ -105,7 +105,9 @@ export default {
         },
 
         authUser: async(obj, { input }, context, info) => {
+            console.log("hola");
             try {
+                console.log("hola");
                 const { email, password } = input;
                 const session = context.driver.session();
                 const usuario = await session.run(
@@ -127,10 +129,12 @@ export default {
                 if (!passwordCorret) {
                     return new Error("el password no es correcto");
                 }
+                console.log("fin");
                 return {
                     token: crearToken(user, process.env.SECRETWORD, "24h"),
                 };
             } catch (error) {
+                console.log(error);
                 return new Error(error);
             }
         },
