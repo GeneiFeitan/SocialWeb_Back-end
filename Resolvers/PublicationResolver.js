@@ -99,7 +99,7 @@ export default {
                 const mutation = await session.run(
                     "MATCH(from:User) where from.userId=$FromUserId MATCH(p:Publication) WHERE p.publicationId= $publicationId  CREATE (from)-[:REACTIONS{date:$date, type:$type,active:true}]->(p) RETURN from,p",
                     {
-                        FromUserId:input.FromUserId,
+                        FromUserId:user.userId,
                         publicationId: input.publicationId,
                         type: input.type,
                         date

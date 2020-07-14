@@ -17,26 +17,26 @@ const app = express();
 const schema = makeAugmentedSchema({
     typeDefs,
     resolvers,
-    context:({req})=>{
-        // console.log(req.headers['authorization'])
-        // console.log(req.headers);
-        const token = req.headers['authorization'] || '';
-        if(token) {npm 
-            try {
-                const user = jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
-                console.log(usuario);
-                return {
-                    user
-                }
-            } catch (error) {
-                console.log('Hubo un error');
-                console.log(error);
-            }
-        }
-        else{
-            console.log('aaa');
-        }
-    },
+    // context:({req})=>{
+    //     // console.log(req.headers['authorization'])
+    //     // console.log(req.headers);
+    //     const token = req.headers['authorization'] || '';
+    //     if(token) {npm 
+    //         try {
+    //             const user = jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
+    //             console.log(usuario);
+    //             return {
+    //                 user
+    //             }
+    //         } catch (error) {
+    //             console.log('Hubo un error');
+    //             console.log(error);
+    //         }
+    //     }
+    //     else{
+    //         console.log('aaa');
+    //     }
+    // },
     config: {
         mutation: true,
         query: {
