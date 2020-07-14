@@ -1,5 +1,5 @@
-import { typeDefs } from './graphql-schema';
-import { resolvers } from './Resolvers/resolvers';
+import { typeDefs} from './graphql-schema';
+import {resolvers} from './Resolvers/resolvers';
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express';
 import dotenv from 'dotenv'
@@ -17,26 +17,26 @@ const app = express();
 const schema = makeAugmentedSchema({
     typeDefs,
     resolvers,
-    // context:({req})=>{
-    //     // console.log(req.headers['authorization'])
-    //     // console.log(req.headers);
-    //     const token = req.headers['authorization'] || '';
-    //     if(token) {
-    //         try {
-    //             const user = jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
-    //             console.log(usuario);
-    //             return {
-    //                 user
-    //             }
-    //         } catch (error) {
-    //             console.log('Hubo un error');
-    //             console.log(error);
-    //         }
-    //     }
-    //     else{
-    //         console.log('aaa');
-    //     }
-    // },
+    context:({req})=>{
+        // console.log(req.headers['authorization'])
+        // console.log(req.headers);
+        const token = req.headers['authorization'] || '';
+        if(token) {npm 
+            try {
+                const user = jwt.verify(token.replace('Bearer ', ''), process.env.SECRETA );
+                console.log(usuario);
+                return {
+                    user
+                }
+            } catch (error) {
+                console.log('Hubo un error');
+                console.log(error);
+            }
+        }
+        else{
+            console.log('aaa');
+        }
+    },
     config: {
         mutation: true,
         query: {
@@ -48,27 +48,27 @@ const schema = makeAugmentedSchema({
 const driver = neo4j.driver(
     process.env.NEO4J_URI || "bolt://localhost:11005",
     neo4j.auth.basic(
-        process.env.NEO4J_USER || "neo4j",
-        process.env.NEO4J_PASSWORD || "123456"
+        process.env.NEO4J_USER || "neo4j", 
+        process.env.NEO4J_PASSWORD || "neo4j2"
     )
 );
 
 
 const server = new ApolloServer({
     schema,
-    context: ({ req }) => {
+    context:({ req }) =>{
         return {
-            driver,
-            req
-        };
+                    driver,
+                    req
+            };
     }
-
+    
 });
 
 // Specify host, port and path for GraphQL endpoint
 const port = process.env.GRAPHQL_SERVER_PORT || 80
 const path = process.env.GRAPHQL_SERVER_PATH || '/graphql'
-const host = process.env.GRAPHQL_SERVER_HOST || 'localhost'
+const host = process.env.GRAPHQL_SERVER_HOST || '10.89.52.46'
 
 /*
  * Optionally, apply Express middleware for authentication, etc
@@ -78,5 +78,5 @@ const host = process.env.GRAPHQL_SERVER_HOST || 'localhost'
 server.applyMiddleware({ app, path })
 
 app.listen({ host, port, path }, () => {
-    console.log(`GraphQL server ready at http://${host}:${port}${path}`)
+  console.log(`GraphQL server ready at http://${host}:${port}${path}`)
 })

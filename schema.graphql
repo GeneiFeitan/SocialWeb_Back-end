@@ -61,6 +61,10 @@ reactions:[ReactionComment]
 type Token {
   token: String
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2b781dc8bbb6e26c3ee327c9cbd76979262bda9f
 
 #----------------------RELATIONSHIP------------------------------------------
 
