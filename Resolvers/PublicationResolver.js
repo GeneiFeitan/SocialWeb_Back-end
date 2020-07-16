@@ -15,10 +15,10 @@ export default {
                 let date = new Date();
                 date = date.toString().substring(3, 15);
                 const response = await session.run(
-                    "MATCH (u:User) WHERE u.userId=$userId CREATE (p:Publication {publicationId:$id,text:$text,type:$type}) CREATE (u)-[:MAKES{date:$date}]->(p) RETURN p", {
+                    "MATCH (u:User) WHERE u.userId=$userId CREATE (p:Publication {publicationId:$publicationId,text:$text,type:$type}) CREATE (u)-[:MAKES{date:$date}]->(p) RETURN p", {
                         userId: input.author,
                         text: input.text,
-                        id: input.publicationId,
+                        publicationId: input.publicationId,
                         type: input.type,
                         date
                     }

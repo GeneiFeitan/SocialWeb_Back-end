@@ -242,6 +242,14 @@ input idInput{
 }
 
 
+input publicationInGroupInput {
+  author: ID!
+  publicationId:ID!
+  text: String
+  type: String
+  groupId: ID
+}
+
 type Query {
   # usuarios
   allUser(first: Int = 4, offset: Int = 0): [User]
@@ -282,4 +290,10 @@ type Mutation {
   MakeGroup(input: GroupInput):Group
   InviteUserstoGroup(input: usuariosentrada):String
   AceptInvitation(input: idInput):String
+
+
+  #Group
+    CreaGroupAndAddUsers(users: [ID], inputGroup: GroupInput): Group
+    makePublicationInGroup(input: publicationInGroupInput): Group
+
 }
