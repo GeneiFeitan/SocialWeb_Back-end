@@ -160,7 +160,6 @@ input UserInput {
 input GroupInput {
   groupId: ID!
   name: String!
-  active: Boolean!
 }
 
 input PublicationInput {
@@ -233,6 +232,16 @@ input UserToAreaInput{
   rol:String
 }
 
+input usuariosentrada{
+  idGroup:ID
+  users:[ID]
+}
+
+input idInput{
+  id:Int
+}
+
+
 type Query {
   # usuarios
   allUser(first: Int = 4, offset: Int = 0): [User]
@@ -257,7 +266,7 @@ type Mutation {
 
 
 
-  MakePublication(input: PublicationInput):Publication
+  MakePublication(input: PublicationInput):String
   CommentPublication(input: CommentInput):Comment
   TaggInPublication(input: TaggPublicationInput):Publication
   SharePublication(input: TaggPublicationInput):Publication
@@ -269,4 +278,8 @@ type Mutation {
   #react
   ReactToPublication(input: ReactPublicationInput):String
   ReactToComment(input: ReactCommentInput):String
+  #group
+  MakeGroup(input: GroupInput):Group
+  InviteUserstoGroup(input: usuariosentrada):String
+  AceptInvitation(input: idInput):String
 }
