@@ -233,6 +233,14 @@ input UserToAreaInput{
   rol:String
 }
 
+input publicationInGroupInput {
+  author: ID!
+  publicationId:ID!
+  text: String
+  type: String
+  groupId: ID
+}
+
 type Query {
   # usuarios
   allUser(first: Int = 4, offset: Int = 0): [User]
@@ -269,4 +277,10 @@ type Mutation {
   #react
   ReactToPublication(input: ReactPublicationInput):String
   ReactToComment(input: ReactCommentInput):String
+
+
+  #Group
+    CreaGroupAndAddUsers(users: [ID], inputGroup: GroupInput): Group
+    makePublicationInGroup(input: publicationInGroupInput): Group
+
 }

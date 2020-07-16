@@ -46,6 +46,7 @@ export default {
   Mutation: {
     CreaGroupAndAddUsers: async (obj, args, context, info) => {
       try {
+        
         const session = context.driver.session();
         console.log(JSON.stringify(args));
 
@@ -79,5 +80,34 @@ export default {
         console.log(e);
       }
     },
+
+    makePublicationInGroup:async (obj, { input }, context)=>{
+      try {
+        console.log('aaa');
+        let date = new Date();
+        date= date.toString().substring(3,15);
+
+        console.log(input);
+        const session = context.driver.session();
+        const resp = await session.run(
+          "MATCH (u:User) WHERE u.userId=$userId MATCH (g:Group) WHERE g.groupId=$groupId CREATE (p:Publication {publicationId:$publicationId,text:$text,type:$type}) CREATE (u)-[:MAKES{date:$date}]->(p) CREATE (g)-[:HAS]->(p) return g",
+          {
+            userId: input.author,
+            text: input.text,
+            publicationId: input.publicationId,
+            type: input.type,
+            groupId: input.groupId,
+            date
+          }
+        ) 
+        session.close();
+
+        console.log(resp);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   },
+
+
 };

@@ -19,7 +19,7 @@ Object.assign(resolvers.Query, CommentResolver.Query);
 //  Mutations
 
 Object.assign(resolvers.Mutation, UserResolver.Mutation);
-// Object.assign(resolvers.Mutation, GroupRsesolver.Mutation);
+Object.assign(resolvers.Mutation, GroupRsesolver.Mutation);
 // Object.assign(resolvers.Mutation, AreaResolver.Mutation);
 Object.assign(resolvers.Mutation, PublicationResolver.Mutation);
 Object.assign(resolvers.Mutation, CommentResolver.Mutation);
