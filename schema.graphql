@@ -241,6 +241,10 @@ input idInput{
   id:Int
 }
 
+input ReportInput{
+  id:ID
+
+}
 
 input publicationInGroupInput {
   author: ID!
@@ -248,6 +252,11 @@ input publicationInGroupInput {
   text: String
   type: String
   groupId: ID
+}
+
+enum status{
+  ACEPT
+  PENDING
 }
 
 type Query {
@@ -295,5 +304,7 @@ type Mutation {
   #Group
     CreaGroupAndAddUsers(users: [ID], inputGroup: GroupInput): Group
     makePublicationInGroup(input: publicationInGroupInput): Group
-
+  #Report
+  ReportPost(input: ReportInput):String
+  ReportComment(input: ReportInput):String
 }

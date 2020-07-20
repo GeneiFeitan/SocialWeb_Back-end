@@ -82,6 +82,50 @@ export default {
         console.log(error);
         throw new Error(error);
       }
+    },
+    ReportPost: async (_, {input}, context)=>{
+      try {
+        let report="violencia";
+        const user=await token.decode(context.req.headers.token,context.driver);
+        let date = new Date();
+        date = date.toString().substring(3, 15);
+        const session= context.driver.session();
+        const mutation= await session.run(
+          "MATCH (u:User) WHERE u.userId=$idUser MATCH (p:Publication) WHERE p.publicationId=$id CREATE(u)-[:REPORT{date:$date, reason:$reason}]->(p) RETURN p",{
+            id: input.id,
+            reason: report,
+            idUser:user.userId,
+            date
+          }
+        )
+        session.close();
+        return "Post Reported"
+      } catch (error) {
+        console.log(error);
+        throw new Error(error)
+      }
+    },
+    ReportComment:async (_,{input},context)=>{
+      try {
+        let report="violencia";
+        const user=await token.decode(context.req.headers.token,context.driver);
+        let date = new Date();
+        date = date.toString().substring(3, 15);
+        const session= context.driver.session();
+        const mutation= await session.run(
+          "MATCH (u:User) WHERE u.userId=$idUser MATCH (c:Comment) WHERE c.commentId=$id CREATE(u)-[r:REPORT{date:$date, reason:$reason}]->(c) RETURN r",{
+            id: input.id,
+            reason: report,
+            idUser:user.userId,
+            date
+          }
+        )
+        session.close();
+        return "comment Report!"
+      } catch (error) {
+        console.log(error);
+        throw new Error(error)
+      }
     }
   },
 };
